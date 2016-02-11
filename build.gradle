@@ -3,7 +3,6 @@ plugins {
 }
 
 group 'com.capgemini'
-version '0.9.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'maven'
@@ -14,3 +13,7 @@ repositories {
 }
 
 dependencies {}
+
+release {
+    buildTasks = ['clean', 'build', 'install']
+}
