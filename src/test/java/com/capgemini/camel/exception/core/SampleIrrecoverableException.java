@@ -1,7 +1,7 @@
 package com.capgemini.camel.exception.core;
 
 /**
- * This is the Sample implementation of the {@link com.rmg.camel.exception.IrrecoverableException}
+ * This is the Sample implementation of the {@link com.capgemini.camel.exception.core.IrrecoverableException}
  *
  * @author Abbas Attarwala
  */
@@ -9,21 +9,21 @@ public class SampleIrrecoverableException extends IrrecoverableException {
 
     /**
      * Constructor with message arg
-     * 
-     * @param message 
+     *
+     * @param message
      */
     public SampleIrrecoverableException(String message) {
         super(message);
     }
-    
+
     /**
      * Constructor with message and cause args
-     * 
+     *
      * @param message
-     * @param cause 
+     * @param cause
      */
     public SampleIrrecoverableException(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
 }

@@ -1,19 +1,99 @@
+buildscript {
+    repositories {
+        maven {
+            url "${artifactory_contextUrl_pluginRel}"
+            credentials {
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+            }
+        }
+    }
+}
+
 plugins {
-    id 'net.researchgate.release' version '2.3.4'
+    id 'java'
+    id 'maven'
+    id 'idea'
+    id 'maven-publish'
+    id 'com.jfrog.artifactory' version '4.9.9'
+    id 'net.researchgate.release' version '2.6.0'
 }
 
 group 'com.capgemini'
 
-apply plugin: 'java'
-apply plugin: 'maven'
-
 repositories {
     mavenLocal()
-    mavenCentral()
+    mavenLocal()
+    maven {
+        url "${artifactory_contextUrl_libReleaseLocal}"
+        credentials {
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+        }
+    }
+    maven {
+        url "${artifactory_contextUrl_libRelease}"
+        credentials {
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+        }
+    }
+
+    maven {
+        url "${artifactory_contextUrl_libSnapshot}"
+        credentials {
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+        }
+    }
+
+    maven {
+        url "${artifactory_contextUrl_libSnapshotLocal}"
+        credentials {
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+        }
+    }
 }
 
 dependencies {}
 
 release {
-    buildTasks = ['clean', 'build', 'install']
+    tagTemplate = '${name}-${version}'
+    buildTasks = ['clean', 'build', 'artifactoryPublish']
+
+    git {
+        requireBranch = 'release'
+    }
+}
+
+afterReleaseBuild.dependsOn artifactoryPublish
+
+artifactory {
+    contextUrl = "${artifactory_contextUrl}"
+    //The base Artifactory URL if not overridden by the publisher/resolver
+    publish {
+        repository {
+            if (project.version.endsWith('-SNAPSHOT')) {
+                repoKey = 'libs-snapshot-local'
+            } else {
+                repoKey = 'libs-release-local'
+            }
+
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+        }
+        defaults {
+            publications('mavenJava')
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
 }
